@@ -74,6 +74,7 @@ jobs:
                     --username ${{ secrets.ARGOCD_USERNAME }} \
                     --password ${{ secrets.ARGOCD_PASSWORD }} \
                     --insecure
+                    --grpc-web
 
             - name: Update deployment.yaml with newly built image
               run: |
@@ -98,4 +99,4 @@ jobs:
                 git push origin main
 
             - name: Refresh ArgoCD App and Sync
-              run: argocd app sync my-app
+              run: argocd app sync my-app --grpc-web
