@@ -98,5 +98,4 @@ jobs:
                 git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
                 git push origin main
 
-            - name: Refresh ArgoCD App and Sync
-              run: argocd app sync my-app --grpc-web
+           
