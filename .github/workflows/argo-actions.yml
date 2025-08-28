@@ -3,7 +3,7 @@ name: GitOps-Pipeline with ArgoCD
 on: 
     push:
         branches: 
-            - main
+            - release
         paths-ignore:
             - 'manifest/**' # ignore changes to manifest files to prevent loop
 env: 
