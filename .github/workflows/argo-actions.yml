@@ -98,7 +98,7 @@ jobs:
                 git pull origin release
                 git add .
                 git commit -m "Update image to my-app:${{ github.sha }}"
-                git push origin main
+                git push origin release
 
             - name: Refresh ArgoCD App and Sync
               run: argocd app sync my-app
