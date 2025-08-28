@@ -85,7 +85,7 @@ jobs:
                 pwd
                 cat manifest/deployment.yaml
                 pwd
-                sed -i "s+${{ secrets.DOCKERHUB_USERNAME }}/my-app.*+${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }}+g" manifest/deployment.yaml
+                sed -i "s+${{ secrets.DOCKERHUB_USERNAME }}/demo-release.*+${{ secrets.DOCKERHUB_USERNAME }}/demo-release:${{ github.sha }}+g" manifest/deployment.yaml
                 cat manifest/deployment.yaml
 
             - name: Commit and Push Updated deployment.yaml
@@ -101,4 +101,4 @@ jobs:
                 git push origin release || true
 
             - name: Refresh ArgoCD App and Sync
-              run: argocd app sync my-app
+              run: argocd app sync demo-release
