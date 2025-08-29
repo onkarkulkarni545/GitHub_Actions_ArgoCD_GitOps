@@ -4,6 +4,7 @@ on:
     push:
         branches: 
             - release
+            - development
         paths-ignore:
             - 'manifest/**' # ignore changes to manifest files to prevent loop
 env: 
