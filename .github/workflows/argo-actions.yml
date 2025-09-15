@@ -6,11 +6,10 @@ on:
       - release
   push:
     branches:
-      - development
       - release
+      - development
     paths-ignore:
-      - 'manifest/**'
-
+      - 'manifest/**' # ignore changes to manifest files to prevent loop
 
 env: 
   PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -37,7 +36,10 @@ jobs:
           fi
           echo "✅ Valid PR source branch."
 
- 
+  build:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps: 
       - name: Checkout code
         uses: actions/checkout@v3
         with:
@@ -65,7 +67,8 @@ jobs:
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }} 
 
   deploy:
-    
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+    needs: build
     runs-on: ubuntu-latest
     steps: 
       - name: Checkout code
