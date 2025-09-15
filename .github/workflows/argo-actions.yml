@@ -4,6 +4,12 @@ on:
   pull_request:
     branches:
       - release
+  push:
+    branches:
+      - development
+      - release
+    paths-ignore:
+      - 'manifest/**'
 
 
 env: 
