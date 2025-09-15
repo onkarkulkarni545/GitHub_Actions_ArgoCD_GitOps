@@ -37,10 +37,7 @@ jobs:
           fi
           echo "✅ Valid PR source branch."
 
-  build:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps: 
+ 
       - name: Checkout code
         uses: actions/checkout@v3
         with:
