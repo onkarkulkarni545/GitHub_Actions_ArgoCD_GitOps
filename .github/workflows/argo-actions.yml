@@ -1,5 +1,23 @@
 name: GitOps-Pipeline with ArgoCD
 
+on:
+  pull_request:
+    branches:
+      - release
+
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR source branch
+        run: |
+          if [[ "${{ github.head_ref }}" != "development" ]]; then
+            echo "❌ Pull requests to release branch must come from development branch only."
+            exit 1
+          fi
+          echo "✅ Valid PR source branch."
+
+
 on: 
     push:
         branches: 
