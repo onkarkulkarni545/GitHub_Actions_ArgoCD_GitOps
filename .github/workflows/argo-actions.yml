@@ -22,18 +22,16 @@ env:
 
 jobs:
   # ✅ Job to check PR source branch
-  check-source-branch:
-    if: github.event_name == 'pull_request'
+  block-non-development-prs:
     runs-on: ubuntu-latest
     steps:
-      - name: Check PR source branch
+      - name: Fail if PR is not from development
         run: |
-          echo "Source branch is: ${{ github.head_ref }}"
-          if [[ "${{ github.head_ref }}" != "development" ]]; then
-            echo "❌ Pull requests to release branch must come from development branch only."
+          if [ "${{ github.head_ref }}" != "development" ]; then
+            echo "ERROR: Only PRs from development branch are allowed!"
             exit 1
           fi
-          echo "✅ Valid PR source branch."
+          echo "PR from development branch. Proceeding."
 
   build:
     if: github.event_name == 'push'
