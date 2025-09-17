@@ -34,7 +34,7 @@ jobs:
           echo "PR from development branch. Proceeding."
 
   build:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.head_ref == 'development')
     runs-on: ubuntu-latest
     steps: 
       - name: Checkout code
@@ -64,7 +64,7 @@ jobs:
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }} 
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.head_ref == 'development')
     needs: build
     runs-on: ubuntu-latest
     steps: 
