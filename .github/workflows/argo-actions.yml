@@ -90,12 +90,18 @@ jobs:
                 cat manifest/deployment.yaml
 
             - name: Commit and Push Updated deployment.yaml
-              run: |
-                git config user.name "${{ secrets.GIT_USERNAME }}"
-                git config user.email "${{ secrets.GIT_EMAIL }}"
-                git remote set-url origin https://$GIT_USERNAME:$PERSONAL_ACCESS_TOKEN@github.com/${{ github.repository }}.git
-                git add manifest/deployment.yaml
-                git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
-                git push origin release
+              run:   |
+                  git config user.name "${{ secrets.GIT_USERNAME }}"
+                  git config user.email "${{ secrets.GIT_EMAIL }}"
+                  git remote set-url origin https://$GIT_USERNAME:$PERSONAL_ACCESS_TOKEN@github.com/${{ github.repository }}.git
+                  git fetch origin
+                  git checkout release
+                  git pull origin release
+                  git add .
+                  git commit -m "Update image to my-app:${{ github.sha }}" || echo "No changes to commit"
+                  git push origin release || true
 
+            - name: Refresh ArgoCD App and Sync
+              run: argocd app sync demo-release
            
+ 
