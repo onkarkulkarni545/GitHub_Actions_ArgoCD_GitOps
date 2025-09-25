@@ -50,11 +50,13 @@ jobs:
         needs: build
         runs-on: ubuntu-latest
         steps: 
-            - name: Checkout code
+            - name: Checkout config repo
               uses: actions/checkout@v3
               with:
+                repository: onkarkulkarni545/config_files
                 token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
                 fetch-depth: 0  # get all history of all branches and tags
+                ref: main
 
             - name: Install kubectl
               run: |
@@ -93,7 +95,7 @@ jobs:
               run:   |
                   git config user.name "${{ secrets.GIT_USERNAME }}"
                   git config user.email "${{ secrets.GIT_EMAIL }}"
-                  git remote set-url origin https://$GIT_USERNAME:$PERSONAL_ACCESS_TOKEN@github.com/${{ github.repository }}.git
+                  git remote set-url origin https://$GIT_USERNAME:$PERSONAL_ACCESS_TOKEN@github.com/${{ github.repository1 }}.git
                   git fetch origin
                   git checkout release
                   git pull origin release
