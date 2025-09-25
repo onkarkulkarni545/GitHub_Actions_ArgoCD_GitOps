@@ -66,6 +66,7 @@ jobs:
                 git fetch origin
                 git checkout main
                 git reset --hard origin/main   # ✅ reset local to remote
+                ls -R
                 sed -i "s+${{ secrets.DOCKERHUB_USERNAME }}/my-app.*+${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }}+g" manifest/deployment.yaml
                 git add deployment.yaml
                 git commit -m "Update image to my-app:${{ github.sha }}" || echo "No changes"
