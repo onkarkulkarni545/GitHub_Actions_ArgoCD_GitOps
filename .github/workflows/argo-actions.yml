@@ -3,7 +3,7 @@ name: GitOps-Pipeline with ArgoCD
 on: 
     push:
         branches: 
-            - main
+            - release
         paths-ignore:
             - 'manifest/**' # ignore changes to manifest files to prevent loop
 env: 
@@ -81,8 +81,8 @@ jobs:
                 git config user.name "${{ secrets.GIT_USERNAME }}"
                 git config user.email "${{ secrets.GIT_EMAIL }}"
                 git fetch origin
-                git checkout main
-                git pull origin main
+                git checkout release
+                git pull origin release
                 pwd
                 cat manifest/deployment.yaml
                 pwd
@@ -96,6 +96,9 @@ jobs:
                 git remote set-url origin https://$GIT_USERNAME:$PERSONAL_ACCESS_TOKEN@github.com/${{ github.repository }}.git
                 git add manifest/deployment.yaml
                 git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
-                git push origin main
+                git push origin release
+
+            - name: Refresh ArgoCD App and Sync
+              run: argocd app sync demo-release
 
            
