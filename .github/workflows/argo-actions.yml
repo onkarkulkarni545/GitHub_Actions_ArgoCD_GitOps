@@ -83,6 +83,7 @@ jobs:
                git config user.email "${{ secrets.GIT_EMAIL }}"
                git remote set-url origin https://github.com/onkarkulkarni545/config_files.git
                git add manifest/deployment.yaml
+               sed -i "s+${{ secrets.DOCKERHUB_USERNAME }}/my-app.*+${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }}+g" manifest/deployment.yaml
                git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
                git pull --rebase origin release
                git push origin release
