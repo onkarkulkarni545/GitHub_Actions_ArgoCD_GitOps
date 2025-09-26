@@ -77,7 +77,7 @@ jobs:
                git remote set-url origin https://github.com/onkarkulkarni545/config_files.git
                git add manifest/deployment.yaml
                git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
-               git pull origin release --no-edit --allow-unrelated-histories
+               git pull origin release --no-edit --no-rebase --allow-unrelated-histories
                git push origin release
 
            
