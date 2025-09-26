@@ -53,6 +53,7 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v3
               with:
+                repository: onkarkulkarni545/config_files
                 token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
                 fetch-depth: 0  # get all history of all branches and tags
 
@@ -60,26 +61,32 @@ jobs:
 
             - name: Update deployment.yaml with newly built image
               run: |
+                cd config_repo
                 git config user.name "${{ secrets.GIT_USERNAME }}"
                 git config user.email "${{ secrets.GIT_EMAIL }}"
-                git fetch origin
-                git checkout main
-                git pull origin main
-                pwd
+          
+                echo "🔹 Current path:" $(pwd)
+                echo "🔹 Old manifest:"
                 cat manifest/deployment.yaml
-                pwd
+          
                 sed -i "s+${{ secrets.DOCKERHUB_USERNAME }}/my-app.*+${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }}+g" manifest/deployment.yaml
+          
+                echo "🔹 Updated manifest:"
                 cat manifest/deployment.yaml
 
             - name: Commit and Push Updated deployment.yaml
               run: |
-                 git config user.name "${{ secrets.GIT_USERNAME }}"
-                 git config user.email "${{ secrets.GIT_EMAIL }}"
-                 git remote set-url origin https://github.com/onkarkulkarni545/config_files.git
-                 git add manifest/deployment.yaml
-                 git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
-                 git pull --rebase origin main  # <-- This command is essential to fetch and apply remote changes
-                 git push origin main
+               cd config_repo
+               git config user.name "${{ secrets.GIT_USERNAME }}"
+               git config user.email "${{ secrets.GIT_EMAIL }}"
+          
+               git add manifest/deployment.yaml
+               git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
+          
+       
+               git pull --rebase origin main
+               git push origin main
+                 
 
 
 
