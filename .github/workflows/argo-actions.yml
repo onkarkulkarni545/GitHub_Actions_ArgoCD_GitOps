@@ -53,7 +53,8 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v3
               with:
-                config_repo: onkarkulkarni545/config_files
+                repository: onkarkulkarni545/config_files
+                ref: release
                 token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
                 fetch-depth: 0  # get all history of all branches and tags
 
