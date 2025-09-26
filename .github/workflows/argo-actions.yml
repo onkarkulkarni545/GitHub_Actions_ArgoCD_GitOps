@@ -59,34 +59,25 @@ jobs:
 
                     
 
-            - name: Update deployment.yaml with newly built image
-              run: |
-                cd config_repo
+            -  name: Update deployment.yaml with newly built image
+               run: |
                 git config user.name "${{ secrets.GIT_USERNAME }}"
                 git config user.email "${{ secrets.GIT_EMAIL }}"
-          
-                echo "🔹 Current path:" $(pwd)
-                echo "🔹 Old manifest:"
-                cat manifest/deployment.yaml
-          
+                git fetch origin
+                git checkout release
+                git pull origin release
                 sed -i "s+${{ secrets.DOCKERHUB_USERNAME }}/my-app.*+${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }}+g" manifest/deployment.yaml
-          
-                echo "🔹 Updated manifest:"
-                cat manifest/deployment.yaml
 
             - name: Commit and Push Updated deployment.yaml
               run: |
-               cd config_repo
                git config user.name "${{ secrets.GIT_USERNAME }}"
                git config user.email "${{ secrets.GIT_EMAIL }}"
-          
+               git remote set-url origin https://github.com/onkarkulkarni545/config_files.git
                git add manifest/deployment.yaml
                git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
-          
-       
-               git pull --rebase origin main
-               git push origin main
-                 
+               git push origin release
+
+           
 
 
 
