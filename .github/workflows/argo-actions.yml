@@ -69,29 +69,22 @@ jobs:
                 git pull origin release
                 sed -i "s+${{ secrets.DOCKERHUB_USERNAME }}/my-app.*+${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }}+g" manifest/deployment.yaml
 
-        
-
-            - name: Commit and Push Updated deployment.yaml
-              run: |
-                git config user.name "${{ secrets.GIT_USERNAME }}"
-                git config user.email "${{ secrets.GIT_EMAIL }}"
-                git remote set-url origin https://$GIT_USERNAME:$PERSONAL_ACCESS_TOKEN@github.com/${{ github.repository }}.git
-                git add manifest/deployment.yaml
-                git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
-                git push origin release
-               
-    
-
-            - name: Synchronize and Push Updated deployment.yaml
+            - name: Synchronize, Commit, and Push Updated deployment.yaml
               run: |
                git config user.name "${{ env.GIT_USERNAME }}"
                git config user.email "${{ env.GIT_EMAIL }}"
-            
-           
+    
+               if ! git diff --cached --quiet; then
+               git commit -m "Update my-app image to ${{ github.sha }}"
+      
                git pull --rebase
-
-         
+      
+    
                git push
+                else
+                  echo "No changes to commit in manifest/deployment.yaml. Skipping push."
+                  exit 0
+                fi
            
 
 
