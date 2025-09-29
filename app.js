@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 88;
 
 app.get('/hello', (req, res) => {
   res.send('Helloo, THis is for testing of CICD pipeline using Github-Actions argocd \n');
