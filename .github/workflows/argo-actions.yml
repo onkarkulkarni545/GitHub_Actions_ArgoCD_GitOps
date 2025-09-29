@@ -68,6 +68,7 @@ jobs:
                 git checkout release
                 git pull origin release
                 sed -i "s+${{ secrets.DOCKERHUB_USERNAME }}/my-app.*+${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }}+g" manifest/deployment.yaml
+                git add manifest/deployment.yaml
 
             - name: Synchronize, Commit, and Push Updated deployment.yaml
               run: |
