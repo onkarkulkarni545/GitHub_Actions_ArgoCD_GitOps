@@ -53,52 +53,41 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v3
               with:
+                repository: onkarkulkarni545/config_files
+                ref: release
                 token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
                 fetch-depth: 0  # get all history of all branches and tags
 
-            - name: Install kubectl
-              run: |
-                  curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.7/2024-12-12/bin/linux/amd64/kubectl
-                  chmod +x ./kubectl
-                  sudo mv ./kubectl /usr/local/bin/kubectl
-
-            - name: Install ArgoCD CLI
-              run: | 
-                  curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-                  chmod +x argocd
-                  sudo mv argocd /usr/local/bin/argocd
-
-            - name: Login to ArgoCD
-              run: |
-                argocd login ${{ secrets.ARGOCD_SERVER }} \
-                    --username ${{ secrets.ARGOCD_USERNAME }} \
-                    --password ${{ secrets.ARGOCD_PASSWORD }} \
-                    --insecure --grpc-web
                     
 
-            - name: Update deployment.yaml with newly built image
-              run: |
+            -  name: Update deployment.yaml with newly built image
+               run: |
                 git config user.name "${{ secrets.GIT_USERNAME }}"
                 git config user.email "${{ secrets.GIT_EMAIL }}"
                 git fetch origin
                 git checkout release
                 git pull origin release
-                pwd
-                cat manifest/deployment.yaml
-                pwd
                 sed -i "s+${{ secrets.DOCKERHUB_USERNAME }}/my-app.*+${{ secrets.DOCKERHUB_USERNAME }}/my-app:${{ github.sha }}+g" manifest/deployment.yaml
-                cat manifest/deployment.yaml
-
-            - name: Commit and Push Updated deployment.yaml
-              run: |
-                git config user.name "${{ secrets.GIT_USERNAME }}"
-                git config user.email "${{ secrets.GIT_EMAIL }}"
-                git remote set-url origin https://$GIT_USERNAME:$PERSONAL_ACCESS_TOKEN@github.com/${{ github.repository }}.git
                 git add manifest/deployment.yaml
-                git diff --cached --quiet || git commit -m "Update image to my-app:${{ github.sha }}"
-                git push origin release
 
-            - name: Refresh ArgoCD App and Sync
-              run: argocd app sync demo-release
+            - name: Synchronize, Commit, and Push Updated deployment.yaml
+              run: |
+               git config user.name "${{ env.GIT_USERNAME }}"
+               git config user.email "${{ env.GIT_EMAIL }}"
+    
+               if ! git diff --cached --quiet; then
+               git commit -m "Update my-app image to ${{ github.sha }}"
+      
+               git pull --rebase
+      
+    
+               git push
+                else
+                  echo "No changes to commit in manifest/deployment.yaml. Skipping push."
+                  exit 0
+                fi
+           
+
+
 
            
