@@ -7,7 +7,7 @@ app.get('/hello', (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-  res.status(200).send('OK');
+  res.status(500).send('NOT_OK');
 });
 
 app.listen(port, () => {
