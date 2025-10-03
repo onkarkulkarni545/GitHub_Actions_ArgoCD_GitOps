@@ -1,0 +1,121 @@
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Project
+metadata:
+  name: kargo-demo
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: kargo-demo-repo
+  namespace: kargo-demo
+  labels:
+    kargo.akuity.io/cred-type: git
+stringData:
+  repoURL: https://github.com/onkarkulkarni545/GitHub_Actions_ArgoCD_GitOps.git
+  username: onkarkulkarni545
+  password: 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
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: kargo-demo
+  namespace: kargo-demo
+spec:
+  subscriptions:
+  - chart:
+      repoURL: https://argoproj.github.io/argo-helm
+      name: argo
+      semverConstraint: ^1.0.0
+  - git:
+      repoURL: https://github.com/onkarkulkarni545/GitHub_Actions_ArgoCD_GitOps.git
+      branch: release
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: demo-promo-process
+  namespace: kargo-demo
+spec:
+  vars:
+    - name: gitopsRepo
+      value: https://github.com/onkarkulkarni545/GitHub_Actions_ArgoCD_GitOps.git
+    - name: imageRepo
+      value: https://github.com/onkarkulkarni545/GitHub_Actions_ArgoCD_GitOps.git
+  steps:
+    - uses: git-clone
+      config:
+        repoURL: ${{ vars.gitopsRepo }}
+        checkout:
+          - branch: release
+            path: ./src
+          - branch: stage/${{ ctx.stage }}
+            create: true
+            path: ./out
+    - uses: git-clear
+      config:
+        path: ./out
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: development
+  namespace: kargo-demo
+spec:
+  requestedFreight:
+    - origin:
+        kind: Warehouse
+        name: kargo-demo
+      sources:
+        direct: true
+  promotionTemplate:
+    spec:
+      steps:
+        - task:
+            name: demo-promo-process
+          as: promo-process
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: release
+  namespace: kargo-demo
+spec:
+  requestedFreight:
+    - origin:
+        kind: Warehouse
+        name: kargo-demo
+      sources:
+        stages:
+          - development
+  credentials:
+    - secretRef:
+        name: dockerhub-creds
+        namespace: kargo-demo
+  promotionTemplate:
+    spec:
+      steps:
+        - task:
+            name: demo-promo-process
+          as: promo-process
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: prod
+  namespace: kargo-demo
+spec:
+  requestedFreight:
+    - origin:
+        kind: Warehouse
+        name: kargo-demo
+      sources:
+        stages:
+          - release
+  promotionTemplate:
+    spec:
+      steps:
+        - task:
+            name: demo-promo-process
+          as: promo-process
