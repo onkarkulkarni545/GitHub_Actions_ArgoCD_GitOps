@@ -15,7 +15,7 @@ metadata:
 stringData:
   repoURL: https://github.com/onkarkulkarni545/GitHub_Actions_ArgoCD_GitOps.git
   username: onkarkulkarni545
-  password: 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
+  password: --------------------------------
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Warehouse
